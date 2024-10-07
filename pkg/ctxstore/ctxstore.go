@@ -5,14 +5,11 @@ import (
 )
 
 func MakeStore[T any]() *ContextStore[T] {
-	key := struct{}{}
-	return &ContextStore[T]{
-		key: key,
-	}
+	return &ContextStore[T]{}
 }
 
 type ContextStore[T any] struct {
-	key any
+	unique any
 }
 
 func (r *ContextStore[T]) Value(ctx context.Context) (T, bool) {
