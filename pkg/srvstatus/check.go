@@ -2,10 +2,15 @@ package srvstatus
 
 import (
 	"context"
+	"github.com/klpx/talk-golang-context/pkg/auth"
 	"time"
 )
 
-func CheckServers(ctx context.Context) []string {
+func CheckServers(ctx context.Context) ([]string, error) {
+	principal, _ := auth.Context.Value(ctx)
+	if !principal.IsAuthorized() {
+		return nil, auth.ErrNotAuthorized
+	}
 	var result []string
 	for i := range 10 {
 		err := checkServer(ctx, i)
@@ -15,7 +20,7 @@ func CheckServers(ctx context.Context) []string {
 			result = append(result, "ok")
 		}
 	}
-	return result
+	return result, nil
 }
 
 func checkServer(ctx context.Context, i int) error {

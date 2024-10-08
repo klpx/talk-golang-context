@@ -2,7 +2,9 @@ package webapp
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"github.com/klpx/talk-golang-context/pkg/auth"
 	"github.com/klpx/talk-golang-context/pkg/ctxlog"
 	"github.com/klpx/talk-golang-context/pkg/srvstatus"
 	"github.com/klpx/talk-golang-context/pkg/storage"
@@ -37,7 +39,18 @@ func ServersStatus() http.HandlerFunc {
 		defer func() {
 			cancel()
 		}()
-		statuses := srvstatus.CheckServers(ctx)
+
+		statuses, err := srvstatus.CheckServers(ctx)
+		if err != nil {
+			if errors.Is(err, auth.ErrNotAuthorized) {
+				w.WriteHeader(http.StatusForbidden)
+				w.Write([]byte("forbidden"))
+			} else {
+				w.WriteHeader(http.StatusInternalServerError)
+				w.Write([]byte(err.Error()))
+			}
+		}
+
 		for i, status := range statuses {
 			_, _ = io.WriteString(w, fmt.Sprintf("server[%d] = %s\n", i, status))
 		}

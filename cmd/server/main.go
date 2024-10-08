@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"github.com/klpx/talk-golang-context/pkg/auth"
 	"github.com/klpx/talk-golang-context/pkg/ctxlog"
 	"github.com/klpx/talk-golang-context/pkg/log"
 	"github.com/klpx/talk-golang-context/pkg/metrics"
@@ -37,6 +38,7 @@ func main() {
 	mux.HandleFunc("/status", webapp.ServersStatus())
 
 	handler := tracing.RequestIDMiddleware(mux)
+	handler = auth.Middleware(handler)
 
 	logger.Infoc(context.TODO(), "Starting HTTP server on port 3333")
 	server := &http.Server{
