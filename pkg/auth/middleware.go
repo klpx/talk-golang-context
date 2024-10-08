@@ -7,8 +7,6 @@ import (
 	"strings"
 )
 
-var Context = ctxstore.MakeStore[*Principal]()
-
 ////
 
 type Principal struct {
@@ -21,6 +19,10 @@ func (p *Principal) IsAuthorized() bool {
 	}
 	return p.authorized
 }
+
+////
+
+var Context = ctxstore.MakeStore[*Principal]()
 
 ////
 
